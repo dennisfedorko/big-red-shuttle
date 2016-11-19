@@ -103,6 +103,18 @@ public class Stop: NSObject {
         }
         return times.first?.description ?? "––"
     }
+    
+    public func arrivalTimeShort() -> String {
+        let fullString = nextArrival()
+        let needles: [Character] = ["a", "p"]
+        
+        for needle in needles {
+            if let index = fullString.characters.index(of: needle) {
+                return fullString.substring(to: index)
+            }
+        }
+        return ""
+    }
 }
 
 func == (lhs: Stop, rhs: Stop) -> Bool {

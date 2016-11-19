@@ -421,19 +421,12 @@ class StopsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             marker.iconView = stop.nextArrivalsToday().count > 0 ? IconViewBig() : IconViewSmall()
             
             let iconView = marker.iconView as! IconView
-            let fullString = stop.nextArrival()
-            let needles: [Character] = ["a", "p"]
+            iconView.timeLabel.text = stop.arrivalTimeShort()
             
-            for needle in needles {
-                if let index = fullString.characters.index(of: needle) {
-                    iconView.timeLabel.text = fullString.substring(to: index)
-                }
-            }
-            
-            marker.map = mapView
+        marker.map = mapView
         }
     }
-    
+
     func animateMarker(iconView: IconView, select: Bool) {
         UIButton.animate(withDuration: 0.1, animations: {
             let scale: CGFloat = iconView is IconViewBig ? 1.2 : 1.1
@@ -445,6 +438,38 @@ class StopsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             CATransaction.setDisableActions(true)
             
             iconView.smallGrayCircle.strokeColor = select ? UIColor.brsred.cgColor : UIColor.iconlightgray.cgColor
+            
+            if select {
+                let fullString = self.selectedStop.nextArrival()
+                let timeFormatter = DateFormatter()
+                timeFormatter.dateFormat = "hh:mma"
+                var stopTime = timeFormatter.date(from: fullString)
+                
+                let date = Date()
+                let calendar = Calendar.current
+                
+                let year = calendar.component(.year, from: date)
+                let month = calendar.component(.month, from: date)
+                let day = calendar.component(.day, from: date)
+                let hour = calendar.component(.hour, from: stopTime!)
+                let mins = calendar.component(.minute, from: stopTime!)
+                
+                stopTime = calendar.date(bySetting: .year, value: year, of: stopTime!)
+                stopTime = calendar.date(bySetting: .month, value: month, of: stopTime!)
+                stopTime = calendar.date(bySetting: .day, value: day, of: stopTime!)
+                stopTime = calendar.date(bySetting: .hour, value: hour, of: stopTime!)
+                stopTime = calendar.date(bySetting: .minute, value: mins, of: stopTime!)
+                
+                
+                let timeDifference = calendar.dateComponents([.hour, .minute], from: stopTime!, to: date)
+                let absDiff = abs(timeDifference.minute!) == 0 ? 0 : abs(timeDifference.minute!) + 1
+                
+                if absDiff >= 0 && absDiff <= 20 {
+                    iconView.timeLabel.text = String(absDiff) + " min"
+                }
+            } else {
+                iconView.timeLabel.text = self.selectedStop.arrivalTimeShort()
+            }
             
             CATransaction.commit()
         }, completion: { (finished: Bool) in
@@ -491,6 +516,7 @@ class StopsViewController: UIViewController, UITableViewDelegate, UITableViewDat
         }
         
         let iconView = marker.iconView as! IconView
+        
         animateMarker(iconView: iconView, select: !iconView.clicked!)
         selectedMarker = !iconView.clicked! ? marker : nil
         
