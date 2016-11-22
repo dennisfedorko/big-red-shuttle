@@ -104,8 +104,22 @@ public class Stop: NSObject {
         return times.first?.description ?? "––"
     }
     
+    public func arrivalTimePmAm() -> String {
+        let fullString = self.nextArrival()
+        print(fullString)
+        
+        if let index = fullString.characters.index(of: "o") {
+            print("index: \(index)")
+            let temp = fullString.substring(to: index)
+            return temp.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+    
+    
+    return fullString
+}
+
     public func arrivalTimeShort() -> String {
-        let fullString = nextArrival()
+        let fullString = self.nextArrival()
         let needles: [Character] = ["a", "p"]
         
         for needle in needles {

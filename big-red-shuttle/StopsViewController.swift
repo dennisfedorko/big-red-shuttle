@@ -439,12 +439,14 @@ class StopsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             iconView.smallGrayCircle.strokeColor = select ? UIColor.brsred.cgColor : UIColor.iconlightgray.cgColor
             
-            print("hey now: \(self.selectedStop.nextArrivalsToday().count)")
-            if select && false {
-                let fullString = self.selectedStop.nextArrival()
+            if select && self.selectedStop.nextArrivalsToday().count > 0 {
+                let fullString = self.selectedStop.arrivalTimePmAm()
+                print(fullString)
+                
                 let timeFormatter = DateFormatter()
                 timeFormatter.dateFormat = "hh:mma"
                 var stopTime = timeFormatter.date(from: fullString)
+                print("stopTime: \(stopTime)")
                 
                 let date = Date()
                 let calendar = Calendar.current
@@ -454,17 +456,21 @@ class StopsViewController: UIViewController, UITableViewDelegate, UITableViewDat
                 let day = calendar.component(.day, from: date)
                 let hour = calendar.component(.hour, from: stopTime!)
                 let mins = calendar.component(.minute, from: stopTime!)
+                let secs = calendar.component(.second, from: date)
                 
                 stopTime = calendar.date(bySetting: .year, value: year, of: stopTime!)
                 stopTime = calendar.date(bySetting: .month, value: month, of: stopTime!)
                 stopTime = calendar.date(bySetting: .day, value: day, of: stopTime!)
                 stopTime = calendar.date(bySetting: .hour, value: hour, of: stopTime!)
                 stopTime = calendar.date(bySetting: .minute, value: mins, of: stopTime!)
-                
+                stopTime = calendar.date(bySetting: .second, value: secs, of: stopTime!)
                 
                 let timeDifference = calendar.dateComponents([.hour, .minute], from: stopTime!, to: date)
-                let absDiff = abs(timeDifference.minute!) == 0 ? 0 : abs(timeDifference.minute!) + 1
                 
+                var absDiff = abs(timeDifference.minute!) == 0 ? 0 : abs(timeDifference.minute!) + 1
+                absDiff = (absDiff != 0 && secs >= 30) ? absDiff - 1 : absDiff
+                absDiff += (timeDifference.hour!) * 60
+
                 if absDiff >= 0 && absDiff <= 20 {
                     iconView.timeLabel.text = String(absDiff) + " min"
                 }
