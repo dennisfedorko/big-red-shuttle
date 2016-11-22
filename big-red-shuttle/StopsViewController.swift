@@ -439,7 +439,8 @@ class StopsViewController: UIViewController, UITableViewDelegate, UITableViewDat
             
             iconView.smallGrayCircle.strokeColor = select ? UIColor.brsred.cgColor : UIColor.iconlightgray.cgColor
             
-            if select {
+            print("hey now: \(self.selectedStop.nextArrivalsToday().count)")
+            if select && false {
                 let fullString = self.selectedStop.nextArrival()
                 let timeFormatter = DateFormatter()
                 timeFormatter.dateFormat = "hh:mma"
