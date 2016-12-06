@@ -62,7 +62,7 @@ public func displayNoInternetAlert(vc: UIViewController) {
 
 // Get BRS stops with name, location, dates, and times
 public func getStops() ->  [Stop] {
-    let stopJsonURLString = "\(Constants.brsStackBaseURL)brs-stops.json"
+    let stopJsonURLString = "\(Constants.brsStackBaseURL)brs-schedule-testing.json"
     let backupURL = Bundle.main.url(forResource: "brs-stops", withExtension: "json")!
     let url = URL(string: stopJsonURLString) ?? backupURL
     
